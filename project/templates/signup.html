@@ -1,5 +1,66 @@
 <!-- templates/signup.html -->
+<script>
 
+    // Function which grabs the SSID and checks if it contains 12 numbers and contains only digits. !!First part of application!!
+    function input_grabber() {
+        // Predefined variable.
+        var x = document.getElementById("Signup_button");
+        x.setAttribute= "is-hidden";
+        var written_SSID = document.getElementById("SSID_textbox").value;
+
+        // Checks if input length is = 12. If so then it checks if input only contains digits.
+        if (written_SSID.length === 12) {
+            if (written_SSID.innerHTML = /^\d+$/.test(written_SSID)) {
+                SSID_algorithm(written_SSID);
+            } else {
+                invalidSSID();
+            }
+        } else {
+            invalidSSID();
+        }
+        
+    }
+    // Function for SSID validation algorithm. !!Second part of application!!
+    function SSID_algorithm(written_SSID) {
+
+        // Predefined variables.
+        var SSID_array = [];
+        var SSID_array_number_over_10 = [];
+        var i = 0;
+
+        // First part of algorithm which splits SSID, multiplies the third, fifth, seventh, ninth and eleventh number with two and the fourth, sixth, eigth and tenth number with 1. These numbers are then put inside an array SSID_array2.
+        SSID_array = written_SSID.split('');
+        SSID_array2 = [(parseInt(SSID_array[2] * 2)), (parseInt(SSID_array[3])), (parseInt(SSID_array[4] * 2)), (parseInt(SSID_array[5])), (parseInt(SSID_array[6] * 2)), (parseInt(SSID_array[7])), (parseInt(SSID_array[8] * 2)), (parseInt(SSID_array[9])), (parseInt(SSID_array[10] * 2))]
+        
+        // Second part of algorithm which iterates array SSID_array2 and adds all numbers contained into a single variable i. If array contains a two digit number then they are split into their individual numbers before being added together.
+        for (let index = 0; index < SSID_array2.length; index++) { 
+            if (parseInt(SSID_array2[index]) > 9) {
+                var number_over_10 = SSID_array2[index].toString();
+                var SSID_array_number_over_10 = number_over_10.split('');
+                i += parseInt(SSID_array_number_over_10[0]) + parseInt(SSID_array_number_over_10[1]);
+            } else {
+                i += parseInt(SSID_array2[index]);
+
+            }
+        }
+        // Third part of algorithm which takes variable i and subtract it from the closest greater number which is divisible by 10 (ex. 10, 20, 30, 40). If the differential is equal to the last number in the SSID (the 12th number) then the SSID is valid. If variable i is equal to a number divisible by 10 then it will subtract itself (ex. 10 would be subtracted 10 - 10 = 0 and not 20 - 10 = 10). 
+        var i_split = [];
+        i_split = i.toString().split('');
+        var final_numb = 10 - parseInt(i_split[1]);
+        var final_numb_2 = parseInt(i_split[1]);
+        if (SSID_array[11] == final_numb) {
+            // final_number = (Closest number divisble by 10) - Last number in SSID.
+            x.style.display = "block";
+        } else if (SSID_array[11] == final_numb_2) {
+            // final_number = (Closest number divisble by 10) - Last number in SSID. In this case i = a number divisble by 10 and so variable final_number therefore is = 0.
+            x.style.display = "block";
+            // final_number =/ (Closest number divisble by 10) - Last number in SSID.
+        } else {
+            x.style.display = "none";
+        }
+    }
+
+</script>
 {% extends "base.html" %}
 
 {% block content %}
@@ -13,10 +74,10 @@
             </div>
         {% endif %}
         {% endwith %}
-        <form method="POST" action="/signup">
+        <form onfocusout="input_grabber()"  method='POST' action="/signup">
             <div class="field">
                 <div class="control">
-                    <input class="input is-large" type="email" name="email" placeholder="Email" autofocus="">
+                    <input class="input is-large" id="SSID_textbox" type="ssid" name="ssid" placeholder="SSID" autofocus="">
                 </div>
             </div>
 
@@ -32,7 +93,8 @@
                 </div>
             </div>
 
-            <button class="button is-block is-info is-large is-fullwidth">Sign Up</button>
+            <button class="button is-block is-info is-large is-fullwidth" id="Signup_button">Sign Up</button>
+            
         </form>
     </div>
 </div>
