@@ -1,25 +1,6 @@
 <!-- templates/signup.html -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-
-    // Function which grabs the SSID and checks if it contains 12 numbers and contains only digits. !!First part of application!!
-    function input_grabber() {
-        // Predefined variable.
-        var x = document.getElementById("Signup_button");
-        x.setAttribute= "is-hidden";
-        var written_SSID = document.getElementById("SSID_textbox").value;
-
-        // Checks if input length is = 12. If so then it checks if input only contains digits.
-        if (written_SSID.length === 12) {
-            if (written_SSID.innerHTML = /^\d+$/.test(written_SSID)) {
-                SSID_algorithm(written_SSID);
-            } else {
-                invalidSSID();
-            }
-        } else {
-            invalidSSID();
-        }
-        
-    }
     // Function for SSID validation algorithm. !!Second part of application!!
     function SSID_algorithm(written_SSID) {
 
@@ -31,9 +12,9 @@
         // First part of algorithm which splits SSID, multiplies the third, fifth, seventh, ninth and eleventh number with two and the fourth, sixth, eigth and tenth number with 1. These numbers are then put inside an array SSID_array2.
         SSID_array = written_SSID.split('');
         SSID_array2 = [(parseInt(SSID_array[2] * 2)), (parseInt(SSID_array[3])), (parseInt(SSID_array[4] * 2)), (parseInt(SSID_array[5])), (parseInt(SSID_array[6] * 2)), (parseInt(SSID_array[7])), (parseInt(SSID_array[8] * 2)), (parseInt(SSID_array[9])), (parseInt(SSID_array[10] * 2))]
-        
+
         // Second part of algorithm which iterates array SSID_array2 and adds all numbers contained into a single variable i. If array contains a two digit number then they are split into their individual numbers before being added together.
-        for (let index = 0; index < SSID_array2.length; index++) { 
+        for (let index = 0; index < SSID_array2.length; index++) {
             if (parseInt(SSID_array2[index]) > 9) {
                 var number_over_10 = SSID_array2[index].toString();
                 var SSID_array_number_over_10 = number_over_10.split('');
@@ -48,17 +29,39 @@
         i_split = i.toString().split('');
         var final_numb = 10 - parseInt(i_split[1]);
         var final_numb_2 = parseInt(i_split[1]);
+        debugger;
         if (SSID_array[11] == final_numb) {
             // final_number = (Closest number divisble by 10) - Last number in SSID.
-            x.style.display = "block";
+            $("#Signup_button").removeClass('is-hidden');
         } else if (SSID_array[11] == final_numb_2) {
             // final_number = (Closest number divisble by 10) - Last number in SSID. In this case i = a number divisble by 10 and so variable final_number therefore is = 0.
-            x.style.display = "block";
+            $("#Signup_button").removeClass('is-hidden');
             // final_number =/ (Closest number divisble by 10) - Last number in SSID.
         } else {
-            x.style.display = "none";
+            $("#Signup_button").addClass('is-hidden');
         }
     }
+    // Function which grabs the SSID and checks if it contains 12 numbers and contains only digits. !!First part of application!!
+    $(document).ready(function () {
+        $("#idForm").focusout(function () {
+
+            var written_SSID = document.getElementById("SSID_textbox").value;
+            debugger;
+            // Checks if input length is = 12. If so then it checks if input only contains digits.
+
+            if (written_SSID.length === 12) {
+                if (written_SSID.innerHTML = /^\d+$/.test(written_SSID)) {
+                    SSID_algorithm(written_SSID);
+                } else {
+                    $("#Signup_button").addClass('is-hidden');
+                }
+            } else {
+                $("#Signup_button").addClass('is-hidden');
+            }
+        });
+    });
+
+
 
 </script>
 {% extends "base.html" %}
@@ -69,15 +72,16 @@
     <div class="box">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <div class="notification is-danger">
-                {{ messages[0] }}. Go to <a href="{{ url_for('auth.login') }}">login page</a>.
-            </div>
+        <div class="notification is-danger">
+            {{ messages[0] }}. Go to <a href="{{ url_for('auth.login') }}">login page</a>.
+        </div>
         {% endif %}
         {% endwith %}
-        <form onfocusout="input_grabber()"  method='POST' action="/signup">
+        <form id="idForm" method='POST' action="/signup">
             <div class="field">
                 <div class="control">
-                    <input class="input is-large" id="SSID_textbox" type="ssid" name="ssid" placeholder="SSID" autofocus="">
+                    <input class="input is-large" id="SSID_textbox" type="ssid" name="ssid" placeholder="SSID"
+                        autofocus="">
                 </div>
             </div>
 
@@ -93,9 +97,11 @@
                 </div>
             </div>
 
-            <button class="button is-block is-info is-large is-fullwidth" id="Signup_button">Sign Up</button>
-            
+            <button id="Signup_button" class="button is-block is-info is-large is-fullwidth is-hidden">Sign Up</button>
+
         </form>
     </div>
 </div>
+
+
 {% endblock %}
